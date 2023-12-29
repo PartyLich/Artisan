@@ -17,6 +17,7 @@ using ECommons.ImGuiMethods;
 using ImGuiNET;
 using PunishLib.ImGuiMethods;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Numerics;
 using ThreadLoadImageHandler = ECommons.ImGuiMethods.ThreadLoadImageHandler;
@@ -51,6 +52,8 @@ namespace Artisan.UI
             set { if (this.craftingVisible != value) CraftingWindowStateChanged?.Invoke(this, value); this.craftingVisible = value; }
         }
 
+        private static Dictionary<OpenWindow, Action> drawMap;
+
         public PluginUI() : base($"{P.Name} {P.GetType().Assembly.GetName().Version}###Artisan")
         {
             this.RespectCloseHotkey = false;
@@ -60,6 +63,21 @@ namespace Artisan.UI
                 MaximumSize = new(9999, 9999)
             };
             P.ws.AddWindow(this);
+
+            drawMap = new()
+                        {
+                            { OpenWindow.None, () => { /* noop */ } },
+                            { OpenWindow.Main, DrawMainWindow },
+                            { OpenWindow.Endurance, Endurance.Draw},
+                            { OpenWindow.Macro, MacroUI.Draw },
+                            { OpenWindow.Lists, CraftingListUI.Draw },
+                            { OpenWindow.About,() => AboutTab.Draw("Artisan") },
+                            { OpenWindow.Debug, DebugTab.Draw },
+                            { OpenWindow.FCWorkshop, FCWorkshopUI.Draw },
+                            { OpenWindow.SpecialList, SpecialLists.Draw },
+                            { OpenWindow.Overview, DrawOverview },
+                            { OpenWindow.Price, CraftingListUI.Draw },
+                        };
         }
 
         public override void PreDraw()
@@ -185,52 +203,7 @@ namespace Artisan.UI
                     ImGui.TableNextColumn();
                     if (ImGui.BeginChild($"###ArtisanRightSide", Vector2.Zero, false))
                     {
-
-                        if (OpenWindow == OpenWindow.Main)
-                        {
-                            DrawMainWindow();
-                        }
-
-                        if (OpenWindow == OpenWindow.Endurance)
-                        {
-                            Endurance.Draw();
-                        }
-
-                        if (OpenWindow == OpenWindow.Lists)
-                        {
-                            CraftingListUI.Draw();
-                        }
-
-                        if (OpenWindow == OpenWindow.About)
-                        {
-                            AboutTab.Draw("Artisan");
-                        }
-
-                        if (OpenWindow == OpenWindow.Debug)
-                        {
-                            DebugTab.Draw();
-                        }
-
-                        if (OpenWindow == OpenWindow.Macro)
-                        {
-                            MacroUI.Draw();
-                        }
-
-                        if (OpenWindow == OpenWindow.FCWorkshop)
-                        {
-                            FCWorkshopUI.Draw();
-                        }
-
-                        if (OpenWindow == OpenWindow.SpecialList)
-                        {
-                            SpecialLists.Draw();
-                        }
-
-                        if (OpenWindow == OpenWindow.Overview)
-                        {
-                            DrawOverview();
-                        }
-
+                        drawMap[OpenWindow]();
                     }
                     ImGui.EndChild();
                     ImGui.EndTable();
