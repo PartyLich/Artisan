@@ -54,7 +54,7 @@ public unsafe class Artisan : IDalamudPlugin
     internal TaskManager TM;
     internal TaskManager CTM;
     internal IconStorage Icons;
-    internal UniversalisClient UniversalsisClient;
+    internal UniversalisClient UniversalisClient;
 
     public static bool currentCraftFinished = false;
     public static readonly object _lockObj = new();
@@ -115,7 +115,7 @@ public unsafe class Artisan : IDalamudPlugin
         IPC.IPC.Init();
         RetainerInfo.Init();
         CraftingListContextMenu.Init();
-        UniversalsisClient = new();
+        UniversalisClient = new();
 
         ws.AddWindow(new RecipeWindowUI());
         ws.AddWindow(new ProcessingWindow());
@@ -591,7 +591,7 @@ public unsafe class Artisan : IDalamudPlugin
         CustomFont = null;
         LuminaSheets.Dispose();
         CraftingListContextMenu.Dispose();
-        UniversalsisClient.Dispose();
+        UniversalisClient.Dispose();
         P = null;
 
     }

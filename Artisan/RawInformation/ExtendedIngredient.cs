@@ -93,8 +93,8 @@ namespace Artisan.RawInformation
             if (P.Config.UseUniversalis)
             {
                 MarketboardData = (P.Config.UniversalisDataCenter)
-                    ? P.UniversalsisClient.GetDataCenterData(itemId)
-                    : P.UniversalsisClient.GetRegionData(itemId);
+                    ? P.UniversalisClient.GetDataCenterData(itemId)
+                    : P.UniversalisClient.GetRegionData(itemId);
             }
         }
 
