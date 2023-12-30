@@ -157,7 +157,7 @@ namespace Artisan.UI.Tables
                 if (ShowColour)
                 {
                     int invAmount = ShowHQOnly && item.CanBeCrafted ? item.InventoryHQ : item.Inventory;
-                    int retainerAmount = ShowHQOnly && item.CanBeCrafted ? item.ReainterCountHQ : item.RetainerCount;
+                    int retainerAmount = ShowHQOnly && item.CanBeCrafted ? item.RetainerCountHQ : item.RetainerCount;
 
                     if (item.CanBeCrafted && retainerAmount + invAmount + item.TotalCraftable >= item.Required)
                     {
@@ -286,7 +286,7 @@ namespace Artisan.UI.Tables
                 if (!HQOnlyCrafts || !item.CanBeCrafted)
                     return item.RetainerCount.ToString();
 
-                int retainerHQ = item.ReainterCountHQ;
+                int retainerHQ = item.RetainerCountHQ;
                 return retainerHQ.ToString();
             }
         }
