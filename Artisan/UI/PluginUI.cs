@@ -28,7 +28,6 @@ namespace Artisan.UI
     {
         public event EventHandler<bool>? CraftingWindowStateChanged;
 
-
         private bool visible = false;
         public OpenWindow OpenWindow { get; private set; } = OpenWindow.Overview;
 

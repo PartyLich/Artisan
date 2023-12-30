@@ -352,7 +352,6 @@ namespace Artisan.UI.Tables
                     double totalCost = 0;
                     double qty = 0;
 
-
                     double currentWorldCost = 0;
                     string currentWorld = "";
                     double currentWorldQty = 0;
