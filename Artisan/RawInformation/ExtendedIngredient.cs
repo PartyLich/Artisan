@@ -115,7 +115,7 @@ namespace Artisan.RawInformation
         }
 
         public int RetainerCount => RetainerInfo.GetRetainerItemCount(Data.RowId);
-        public int ReainterCountHQ => RetainerInfo.GetRetainerItemCount(Data.RowId, true, true);
+        public int RetainerCountHQ => RetainerInfo.GetRetainerItemCount(Data.RowId, true, true);
         public int TotalCraftable => NumberCraftable(Data.RowId);
 
         public static async Task<List<Ingredient>> GenerateList(CraftingList originList)
