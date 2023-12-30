@@ -118,7 +118,7 @@ namespace Artisan.CraftingLists
                         }
                     }
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     ex.Log();
                     Notify.Error("Unable to import.");
@@ -168,8 +168,6 @@ namespace Artisan.CraftingLists
                 ImGui.EndPopup();
             }
         }
-
-        
 
         public static void AddAllSubcrafts(Recipe selectedRecipe, CraftingList selectedList, int amounts = 1, int loops = 1)
         {
@@ -303,7 +301,6 @@ namespace Artisan.CraftingLists
             }
         }
 
-        
         public static unsafe bool CheckForIngredients(Recipe recipe, bool fetchFromCache = true, bool checkRetainer = false)
         {
             if (fetchFromCache)
@@ -392,9 +389,6 @@ namespace Artisan.CraftingLists
                 return 0;
             }
         }
-        
-
-
 
         public static Recipe? GetIngredientRecipe(string ingredient)
         {
