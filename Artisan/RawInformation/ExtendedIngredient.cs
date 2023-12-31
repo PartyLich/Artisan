@@ -21,6 +21,7 @@ namespace Artisan.RawInformation
         public Recipe? CraftedRecipe;
         public Item Data;
         public TerritoryType GatherZone;
+        public ulong itemId;
         public IDalamudTextureWrap Icon;
         public int MaterialIndex;
         public CraftingList OriginList;
@@ -90,12 +91,7 @@ namespace Artisan.RawInformation
             }
             UsedInMaterialsList = materials.Where(x => LuminaSheets.RecipeSheet.Values.Any(y => y.ItemResult.Row == x.Key && y.UnkData5.Any(z => z.ItemIngredient == Data.RowId))).ToDictionary(x => x.Key, x => x.Value);
 
-            if (P.Config.UseUniversalis)
-            {
-                MarketboardData = (P.Config.UniversalisDataCenter)
-                    ? P.UniversalsisClient.GetDataCenterData(itemId)
-                    : P.UniversalsisClient.GetRegionData(itemId);
-            }
+            this.itemId = itemId;
         }
 
         public virtual event EventHandler<bool>? OnRemainingChange;
@@ -131,6 +127,21 @@ namespace Artisan.RawInformation
                 await Task.Run(() => output.Add(new Ingredient(item.Key, item.Value, originList, materials)));
             }
 
+            if (P.Config.UseUniversalis)
+            {
+                var ids = output.Select(i => i.itemId);
+                var data = (P.Config.UniversalisDataCenter)
+                   ? P.UniversalisClient.GetDataCenterData(ids)
+                   : P.UniversalisClient.GetRegionData(ids);
+                if (data != null)
+                {
+                    foreach (var (ingredient, mbData) in output.Zip(data))
+                    {
+                        ingredient.MarketboardData = mbData;
+                    }
+                }
+            }
+
             return output;
         }
 
@@ -143,10 +154,12 @@ namespace Artisan.RawInformation
                 var recipe = LuminaSheets.RecipeSheet.Values.First(x => x.ItemResult.Row == material.Key && x.UnkData5.Any(y => y.ItemIngredient == Data.RowId));
                 var numberUsedInRecipe = recipe.UnkData5.First(x => x.ItemIngredient == Data.RowId).AmountIngredient;
 
-                UsedInMaterialsListCount[recipe.RowId] = Math.Min((int)Math.Floor((double)(owned / recipe.AmountResult)) * numberUsedInRecipe, material.Value * numberUsedInRecipe);
+                var count = Math.Min((int)Math.Floor((double)(owned / recipe.AmountResult)) * numberUsedInRecipe, material.Value * numberUsedInRecipe);
+                UsedInMaterialsListCount[recipe.RowId] = count;
 
-                output += Math.Min((int)Math.Floor((double)(owned / recipe.AmountResult)) * numberUsedInRecipe, material.Value * numberUsedInRecipe);
+                output += count;
             }
+
             return output;
         }
 
