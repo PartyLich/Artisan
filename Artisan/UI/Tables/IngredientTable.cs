@@ -69,7 +69,7 @@ namespace Artisan.UI.Tables
             DalamudReflector.TryGetDalamudPlugin("Market board", out var _, false, true);
 
         private static bool Lifestream =>
-    DalamudReflector.TryGetDalamudPlugin("Lifestream", out var _, false, true);
+            DalamudReflector.TryGetDalamudPlugin("Lifestream", out var _, false, true);
 
         private static unsafe void SearchItem(uint item) => ItemFinderModule.Instance()->SearchForItem(item);
 
@@ -448,7 +448,6 @@ namespace Artisan.UI.Tables
             }
         }
 
-
         public sealed class GatherItemLocationColumn : ItemFilterColumn
         {
             public GatherItemLocationColumn()
@@ -738,8 +737,6 @@ namespace Artisan.UI.Tables
             }
 
             ImGuiComponents.HelpMarker("Hold Shift to craft without applying food/potion buffs.\r\nHold Ctrl to quick synth this item.");
-
-
         }
 
         private void DrawRestockFromRetainer(Ingredient item)

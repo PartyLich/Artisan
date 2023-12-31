@@ -431,7 +431,6 @@ internal class ListEditor : Window, IDisposable
         }
     }
 
-
     private void DrawRecipeOptions()
     {
         {
@@ -589,6 +588,7 @@ internal class ListEditor : Window, IDisposable
             }
         }
     }
+
     private void DrawTotalIngredientsTable()
     {
         if (Table == null)
@@ -1166,7 +1166,8 @@ internal class ListFolders : ItemSelector<CraftingList>
         P.Config.Save();
 
         if (!CraftingListUI.Processing)
-        CraftingListUI.selectedList = new CraftingList();
+            CraftingListUI.selectedList = new CraftingList();
+
         return true;
     }
 
@@ -1193,7 +1194,7 @@ internal class ListFolders : ItemSelector<CraftingList>
             }
 
             if (!CraftingListUI.Processing)
-            CraftingListUI.selectedList = P.Config.CraftingLists[idx];
+                CraftingListUI.selectedList = P.Config.CraftingLists[idx];
         }
 
         if (!CraftingListUI.Processing)

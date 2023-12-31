@@ -41,7 +41,6 @@ namespace Artisan.CraftingLists
         public bool Repair { get; set; }
 
         public int RepairPercent = 50;
-
         public bool AddAsQuickSynth;
     }
 
@@ -53,6 +52,7 @@ namespace Artisan.CraftingLists
         public uint Potion = 0;
         public bool PotHQ { get; set; } = false;
     }
+
     public static class CraftingListFunctions
     {
         public static int CurrentIndex;

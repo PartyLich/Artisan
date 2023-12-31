@@ -15,7 +15,7 @@ internal static class CraftingListHelpers
                 .OrderBy(x => x.RecipeLevelTable.Value.ClassJobLevel)
                 .ThenBy(x => x.ItemResult.Value.Name.RawString)
                 .ToDictionary(x => x.RowId, x => x);
-    
+
     internal static Dictionary<uint, bool> SelectedRecipesCraftable = new();
 
     public static void AddRecipeIngredientsToList(Recipe? recipe, ref Dictionary<uint, int> ingredientList, bool addSublist = true, CraftingList selectedList = null)
@@ -100,22 +100,21 @@ internal static class CraftingListHelpers
                 var recipe = GetIngredientRecipe(requiredItem.Key);
                 if (list.Items.Any(x => x == recipe.RowId))
                 {
-                    
                     var crafting = list.Items.Count(x => x == recipe.RowId) * recipe.AmountResult;
-                    
+
                     if (crafting > requiredItem.Value)
                     {
                         double diff = crafting - requiredItem.Value;
-                        
+
                         var numberOfCrafts = Math.Floor(diff / recipe.AmountResult);
-                        
+
                         for (int i = 0; i < numberOfCrafts; i++)
                         {
                             var index = list.Items.IndexOf(recipe.RowId);
                             list.Items.RemoveAt(index);
                         }
 
-                        
+
                     }
                 }
 
@@ -136,13 +135,13 @@ internal static class CraftingListHelpers
                 var recipe = GetIngredientRecipe(requiredItem.Key);
                 if (list.Items.Any(x => x == recipe.RowId))
                 {
-                   
+
                     var crafting = list.Items.Count(x => x == recipe.RowId) * recipe.AmountResult;
-                   
+
                     if (crafting > requiredItem.Value)
                     {
                         double diff = crafting - requiredItem.Value;
-                      
+
                         var numberOfCrafts = Math.Floor(diff / recipe.AmountResult);
 
                         for (int i = 0; i < numberOfCrafts; i++)

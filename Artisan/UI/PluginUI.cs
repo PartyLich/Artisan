@@ -812,7 +812,7 @@ namespace Artisan.UI
                 {
                     ImGuiEx.ImGuiLineCentered("###EnduranceNewSetting", () =>
                     {
-                        ImGui.Image(img.ImGuiHandle, new Vector2(img.Width,img.Height));
+                        ImGui.Image(img.ImGuiHandle, new Vector2(img.Width, img.Height));
                     });
                 }
 

@@ -144,8 +144,6 @@ namespace Artisan.CraftingLists
             Endurance.Enable = false;
         }
 
-        
-
         private static void DrawNewListPopup()
         {
             if (ImGui.BeginPopup("NewCraftingList"))
