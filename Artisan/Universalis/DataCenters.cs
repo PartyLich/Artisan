@@ -26,21 +26,37 @@ namespace Artisan.Universalis
             猫小胖 = { 1192, 1183, 1180, 1186, 1201, 1068, 1064, 1187 },
             한국 = { 2075, 2076, 2077, 2078, 2080 };
 
+        public static readonly Dictionary<string, uint[]> AllDataCenters = new()
+            {
+                { "Elemental", Elemental },
+                { "Gaia", Gaia },
+                { "Mana", Mana},
+                { "Aether", Aether },
+                { "Primal", Primal },
+                { "Chaos", Chaos  },
+                { "Light", Light },
+                { "Crystal", Crystal },
+                { "Materia", Materia },
+                { "Meteor", Meteor },
+                { "Dynamis", Dynamis },
+                { "陆行鸟", 陆行鸟 },
+                { "莫古力", 莫古力 },
+                { "猫小胖", 猫小胖 },
+                { "한국", 한국 },
+            };
+
         public static uint[]? GetDataCenterByWorld(uint world)
         {
-            foreach (var region in Regions.AllRegions)
-            {
-                foreach (var dc in region.Values)
-                {
-                    foreach (var worlds in dc)
-                    {
-                        if (worlds.Contains(world))
-                            return worlds;
-                    }
-                }
-            }
+            return Array.Find(AllDataCenters.Values.ToArray(), (worlds) => worlds.Contains(world));
+        }
 
-            return null;
+        public static string? GetDataCenterNameByWorld(uint world)
+        {
+            var worlds = GetDataCenterByWorld(world);
+            if (worlds == null)
+                return null;
+
+            return AllDataCenters.FindKeysByValue(worlds).First();
         }
 
         public static string? GetWorldName(uint world)

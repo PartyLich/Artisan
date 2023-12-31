@@ -29,7 +29,7 @@ namespace Artisan.Universalis
             return marketBoardFromAPI;
         }
 
-        public MarketboardData GetRegionData(ulong itemId)
+        public MarketboardData? GetRegionData(ulong itemId)
         {
             var world = Svc.ClientState.LocalPlayer?.CurrentWorld.Id;
             if (world == null)
@@ -41,6 +41,19 @@ namespace Artisan.Universalis
 
 
             return GetMarketBoard(region, itemId);
+        }
+
+        public MarketboardData? GetDataCenterData(ulong itemId)
+        {
+            var world = Svc.ClientState.LocalPlayer?.CurrentWorld.Id;
+            if (world == null)
+                return null;
+
+            var datacenter = DataCenters.GetDataCenterNameByWorld(world.Value);
+            if (datacenter == null)
+                return null;
+
+            return GetMarketBoard(datacenter, itemId);
         }
 
         public void Dispose()
