@@ -21,6 +21,7 @@ namespace Artisan.RawInformation
         public Recipe? CraftedRecipe;
         public Item Data;
         public TerritoryType GatherZone;
+        public ulong itemId;
         public IDalamudTextureWrap Icon;
         public int MaterialIndex;
         public CraftingList OriginList;
@@ -90,12 +91,7 @@ namespace Artisan.RawInformation
             }
             UsedInMaterialsList = materials.Where(x => LuminaSheets.RecipeSheet.Values.Any(y => y.ItemResult.Row == x.Key && y.UnkData5.Any(z => z.ItemIngredient == Data.RowId))).ToDictionary(x => x.Key, x => x.Value);
 
-            if (P.Config.UseUniversalis)
-            {
-                MarketboardData = (P.Config.UniversalisDataCenter)
-                    ? P.UniversalisClient.GetDataCenterData(itemId)
-                    : P.UniversalisClient.GetRegionData(itemId);
-            }
+            this.itemId = itemId;
         }
 
         public virtual event EventHandler<bool>? OnRemainingChange;
@@ -129,6 +125,21 @@ namespace Artisan.RawInformation
             foreach (var item in materials.OrderBy(x => x.Key))
             {
                 await Task.Run(() => output.Add(new Ingredient(item.Key, item.Value, originList, materials)));
+            }
+
+            if (P.Config.UseUniversalis)
+            {
+                var ids = output.Select(i => i.itemId);
+                var data = (P.Config.UniversalisDataCenter)
+                   ? P.UniversalisClient.GetDataCenterData(ids)
+                   : P.UniversalisClient.GetRegionData(ids);
+                if (data != null)
+                {
+                    foreach (var (ingredient, mbData) in output.Zip(data))
+                    {
+                        ingredient.MarketboardData = mbData;
+                    }
+                }
             }
 
             return output;
