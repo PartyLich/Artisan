@@ -20,13 +20,15 @@ internal static class CraftingListHelpers
 
     public static void AddRecipeIngredientsToList(Recipe? recipe, ref Dictionary<uint, int> ingredientList, bool addSublist = true, CraftingList selectedList = null)
     {
+        static bool hasQuantity(Recipe.RecipeUnkData5Obj x) => x.AmountIngredient > 0 && x.ItemIngredient != 0;
+
         try
         {
             if (recipe == null) return;
 
             if (selectedList != null)
             {
-                foreach (var ing in recipe.UnkData5.Where(x => x.AmountIngredient > 0 && x.ItemIngredient != 0))
+                foreach (var ing in recipe.UnkData5.Where(hasQuantity))
                 {
                     if (ingredientList.ContainsKey((uint)ing.ItemIngredient))
                     {
@@ -49,7 +51,7 @@ internal static class CraftingListHelpers
             }
             else
             {
-                foreach (var ing in recipe.UnkData5.Where(x => x.AmountIngredient > 0 && x.ItemIngredient != 0))
+                foreach (var ing in recipe.UnkData5.Where(hasQuantity))
                 {
                     if (ingredientList.ContainsKey((uint)ing.ItemIngredient))
                     {
