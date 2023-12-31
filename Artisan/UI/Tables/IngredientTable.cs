@@ -347,40 +347,7 @@ namespace Artisan.UI.Tables
 
             public override string ToName(Ingredient item)
             {
-                if (item.MarketboardData != null && !CheapestListings.ContainsKey(item.Data.RowId))
-                {
-                    double totalCost = 0;
-                    double qty = 0;
-
-                    double currentWorldCost = 0;
-                    string currentWorld = "";
-                    double currentWorldQty = 0;
-
-                    foreach (var world in item.MarketboardData.AllListings.Select(x => x.World))
-                    {
-                        totalCost = 0;
-                        qty = 0;
-
-                        foreach (var listing in item.MarketboardData.AllListings.Where(x => x.World == world).OrderBy(x => x.TotalPrice))
-                        {
-                            if (qty >= item.Required) break;
-                            qty += listing.Quantity;
-                            totalCost += listing.TotalPrice;
-                        }
-
-                        if ((totalCost < currentWorldCost && qty >= item.Required) || currentWorldCost == 0 || (qty > currentWorldQty && qty < item.Required))
-                        {
-                            currentWorldCost = totalCost;
-                            currentWorld = world;
-                            currentWorldQty = qty;
-                        }
-                    }
-
-                    CheapestListings.TryAdd(item.Data.RowId, new(currentWorld, currentWorldQty, currentWorldCost));
-
-                    item.MarketboardData.LowestWorld = currentWorld;
-                }
-
+                FindCheapest(ref CheapestListings, item);
                 if (CheapestListings.ContainsKey(item.Data.RowId))
                 {
                     var listing = CheapestListings[item.Data.RowId];
@@ -668,6 +635,42 @@ namespace Artisan.UI.Tables
             DrawFilterOnCrafts(item);
             DrawRestockFromRetainer(item);
             //DrawCraftThisItem(item);
+        }
+
+        private static void FindCheapest(ref Dictionary<uint, (string World, double Qty, double Cost)> CheapestListings, Ingredient item)
+        {
+            if (item.MarketboardData != null && !CheapestListings.ContainsKey(item.Data.RowId))
+            {
+                double totalCost = 0;
+                double qty = 0;
+
+                double currentWorldCost = 0;
+                string currentWorld = "";
+                double currentWorldQty = 0;
+
+                foreach (var world in item.MarketboardData.AllListings.Select(x => x.World))
+                {
+                    totalCost = 0;
+                    qty = 0;
+
+                    foreach (var listing in item.MarketboardData.AllListings.Where(x => x.World == world).OrderBy(x => x.TotalPrice))
+                    {
+                        if (qty >= item.Remaining) break;
+                        qty += listing.Quantity;
+                        totalCost += listing.TotalPrice;
+                    }
+
+                    if (currentWorldCost == 0 || (totalCost < currentWorldCost && qty >= item.Remaining) || (qty > currentWorldQty && qty < item.Remaining))
+                    {
+                        currentWorldCost = totalCost;
+                        currentWorld = world;
+                        currentWorldQty = qty;
+                    }
+                }
+
+                CheapestListings.TryAdd(item.Data.RowId, new(currentWorld, currentWorldQty, currentWorldCost));
+                item.MarketboardData.LowestWorld = currentWorld;
+            }
         }
 
         private void DrawMarketBoardLookup(Ingredient item)
