@@ -119,6 +119,11 @@ namespace Artisan.UI.Tables
             foreach (var item in Items)
             {
                 item.OnRemainingChange += SetFilterDirty;
+
+                if (P.Config.UseUniversalis)
+                {
+                    FindCheapest(ref _cheapestServerColumn.CheapestListings, item);
+                }
             }
         }
 
@@ -347,7 +352,6 @@ namespace Artisan.UI.Tables
 
             public override string ToName(Ingredient item)
             {
-                FindCheapest(ref CheapestListings, item);
                 if (CheapestListings.ContainsKey(item.Data.RowId))
                 {
                     var listing = CheapestListings[item.Data.RowId];
