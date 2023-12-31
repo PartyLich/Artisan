@@ -55,6 +55,7 @@ namespace Artisan.UI.Tables
         public readonly GatherItemLocationColumn _gatherItemLocationColumn = new() { Label = "Gathered Zone" };
         public readonly CheapestServerColumn _cheapestServerColumn = new() { Label = "Optimal World For Buying" };
         public readonly NumberForSaleColumn _numberForSaleColumn = new() { Label = "Quantity For Sale (All Worlds)" };
+        public double TotalCost => _cheapestServerColumn.CheapestListings.Aggregate(0d, (acc, item) => acc + item.Value.Cost);
 
         private static bool GatherBuddy =>
             DalamudReflector.TryGetDalamudPlugin("GatherBuddy", out var _, false, true);
