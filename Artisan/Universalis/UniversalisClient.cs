@@ -61,6 +61,47 @@ namespace Artisan.Universalis
             this.httpClient.Dispose();
         }
 
+        private static MarketboardData? ParseMarketData(dynamic json)
+        {
+            var marketBoardData = new MarketboardData
+            {
+                LastCheckTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                LastUploadTime = json.lastUploadTime?.Value,
+                AveragePriceNQ = json.averagePriceNQ?.Value,
+                AveragePriceHQ = json.averagePriceHQ?.Value,
+                CurrentAveragePriceNQ = json.currentAveragePriceNQ?.Value,
+                CurrentAveragePriceHQ = json.currentAveragePriceHQ?.Value,
+                MinimumPriceNQ = json.minPriceNQ?.Value,
+                MinimumPriceHQ = json.minPriceHQ?.Value,
+                MaximumPriceNQ = json.maxPriceNQ?.Value,
+                MaximumPriceHQ = json.maxPriceHQ?.Value,
+                TotalNumberOfListings = json.listingsCount?.Value,
+                TotalQuantityOfUnits = json.unitsForSale?.Value
+            };
+
+            if (json.listings.Count > 0)
+            {
+                foreach (var item in json.listings)
+                {
+                    Listing listing = new()
+                    {
+                        World = item.worldName.Value,
+                        Quantity = item.quantity.Value,
+                        TotalPrice = item.total.Value,
+                        UnitPrice = item.pricePerUnit.Value
+                    };
+
+                    marketBoardData.AllListings.Add(listing);
+                }
+
+                marketBoardData.CurrentMinimumPrice = marketBoardData.AllListings.First().TotalPrice;
+                marketBoardData.LowestWorld = marketBoardData.AllListings.First().World;
+                marketBoardData.ListingQuantity = marketBoardData.AllListings.First().Quantity;
+            }
+
+            return marketBoardData;
+        }
+
         private MarketboardData? GetMarketBoardData(string region, ulong itemId)
         {
             HttpResponseMessage result;
@@ -97,42 +138,7 @@ namespace Artisan.Universalis
 
             try
             {
-                var marketBoardData = new MarketboardData
-                {
-                    LastCheckTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
-                    LastUploadTime = json.lastUploadTime?.Value,
-                    AveragePriceNQ = json.averagePriceNQ?.Value,
-                    AveragePriceHQ = json.averagePriceHQ?.Value,
-                    CurrentAveragePriceNQ = json.currentAveragePriceNQ?.Value,
-                    CurrentAveragePriceHQ = json.currentAveragePriceHQ?.Value,
-                    MinimumPriceNQ = json.minPriceNQ?.Value,
-                    MinimumPriceHQ = json.minPriceHQ?.Value,
-                    MaximumPriceNQ = json.maxPriceNQ?.Value,
-                    MaximumPriceHQ = json.maxPriceHQ?.Value,
-                    TotalNumberOfListings = json.listingsCount?.Value,
-                    TotalQuantityOfUnits = json.unitsForSale?.Value
-                };
-                if (json.listings.Count > 0)
-                {
-                    foreach (var item in json.listings)
-                    {
-                        Listing listing = new()
-                        {
-                            World = item.worldName.Value,
-                            Quantity = item.quantity.Value,
-                            TotalPrice = item.total.Value,
-                            UnitPrice = item.pricePerUnit.Value
-                        };
-
-                        marketBoardData.AllListings.Add(listing);
-                    }
-
-                    marketBoardData.CurrentMinimumPrice = marketBoardData.AllListings.First().TotalPrice;
-                    marketBoardData.LowestWorld = marketBoardData.AllListings.First().World;
-                    marketBoardData.ListingQuantity = marketBoardData.AllListings.First().Quantity;
-                }
-
-                return marketBoardData;
+                return ParseMarketData(json);
             }
             catch (Exception ex)
             {
