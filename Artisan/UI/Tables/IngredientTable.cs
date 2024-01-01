@@ -353,24 +353,21 @@ namespace Artisan.UI.Tables
 
             public override string ToName(Ingredient item)
             {
-                if (CheapestListings.ContainsKey(item.Data.RowId))
+                if (!CheapestListings.TryGetValue(item.Data.RowId, out (string World, double Qty, double Cost) value))
                 {
-                    var listing = CheapestListings[item.Data.RowId];
-
-                    return $"{listing.World} - Cost {listing.Cost.ToString("N0")}, Qty {listing.Qty}";
-
+                    return "ERROR - No Listings (Possible Universalis Connection Issue)";
                 }
 
-                return "ERROR - No Listings (Possible Universalis Connection Issue)";
+                return $"{value.World} - Cost {value.Cost.ToString("N0")}, Qty {value.Qty}";
             }
 
             public override void DrawColumn(Ingredient item, int _)
             {
                 ImGui.Text($"{ToName(item)}");
 
-                if (Lifestream && CheapestListings.ContainsKey(item.Data.RowId))
+                if (Lifestream && CheapestListings.TryGetValue(item.Data.RowId, out (string World, double Qty, double Cost) listing))
                 {
-                    var server = CheapestListings[item.Data.RowId].World;
+                    var server = listing.World;
                     if (ImGui.IsItemHovered())
                     {
                         ImGui.BeginTooltip();
