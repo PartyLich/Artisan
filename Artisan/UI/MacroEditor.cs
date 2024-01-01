@@ -121,6 +121,19 @@ namespace Artisan.UI
                     Notify.Success("Macro Copied to Clipboard.");
                 }
 
+                ImGui.SameLine();
+                var export14Button = ImGuiHelpers.GetButtonSize("Export Macro (XIV)");
+                ImGui.SetCursorPosX(ImGui.GetContentRegionMax().X - exportButton.X - export14Button.X - 3f);
+                if (ImGui.Button("Export Macro (XIV)###ExportButton14"))
+                {
+                    var text = string.Join(
+                        "\r\n",
+                        SelectedMacro.MacroActions.Select(x => $"/ac {x.NameOfAction()} <wait.{(MacroUI.ActionIsLengthyAnimation(x) ? 3 : 2)}>")
+                    );
+                    ImGui.SetClipboardText(text);
+                    Notify.Success("Macro Copied to Clipboard.");
+                }
+
                 ImGui.Spacing();
                 bool skipQuality = SelectedMacro.MacroOptions.SkipQualityIfMet;
                 if (ImGui.Checkbox("Skip quality actions if at 100%", ref skipQuality))
