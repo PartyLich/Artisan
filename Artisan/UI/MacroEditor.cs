@@ -150,7 +150,6 @@ namespace Artisan.UI
                     P.Config.Save();
                 }
 
-
                 bool upgradeQualityActions = SelectedMacro.MacroOptions.UpgradeQualityActions;
                 if (ImGui.Checkbox("Upgrade Quality Actions", ref upgradeQualityActions))
                 {
@@ -209,7 +208,6 @@ namespace Artisan.UI
                             SelectedMacro.MacroStepOptions.Insert(selectedActionIndex + 1, new());
                         }
                     }
-                    
 
                     ImGui.Columns(2, "actionColumns", true);
                     ImGui.SetColumnWidth(0, 220f.Scale());
@@ -294,7 +292,7 @@ namespace Artisan.UI
 
                         ImGui.Columns(1);
                         ImGui.PopStyleVar();
-                        ImGui.EndChild();   
+                        ImGui.EndChild();
                         if (ImGui.Button("Delete Action (Hold Ctrl)") && ImGui.GetIO().KeyCtrl)
                         {
                             SelectedMacro.MacroActions.RemoveAt(selectedActionIndex);
@@ -402,7 +400,6 @@ namespace Artisan.UI
                         Raweditor = !Raweditor;
                     }
                 }
-
 
                 ImGuiEx.ImGuiLineCentered("MTimeHead", delegate
                 {
