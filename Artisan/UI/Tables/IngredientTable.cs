@@ -53,7 +53,7 @@ namespace Artisan.UI.Tables
         public readonly CraftItemsColumn _craftItemsColumn = new() { Label = "Used to Craft" };
         public readonly ItemCategoryColumn _itemCategoryColumn = new() { Label = "Category" };
         public readonly GatherItemLocationColumn _gatherItemLocationColumn = new() { Label = "Gathered Zone" };
-        public readonly CheapestServerColumn _cheapestServerColumn = new() { Label = "Optimal World For Buying" };
+        public readonly CheapestServerColumn _cheapestServerColumn = new() { Label = "Optimal Purchase World" };
         public readonly NumberForSaleColumn _numberForSaleColumn = new() { Label = "Quantity For Sale (All Worlds)" };
         public double TotalCost => _cheapestServerColumn.CheapestListings.Aggregate(0d, (acc, item) => acc + item.Value.Cost);
 
