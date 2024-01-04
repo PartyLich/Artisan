@@ -73,7 +73,7 @@ internal class ListEditor : Window, IDisposable
 
     internal string Search = string.Empty;
 
-    public Dictionary<uint, int> SelectedListMateralsNew = new();
+    public Dictionary<uint, int> SelectedListMaterialsNew = new();
 
     public IngredientTable Table;
 
@@ -295,7 +295,7 @@ internal class ListEditor : Window, IDisposable
 
             if (ImGui.Button("Add to List", new Vector2(ImGui.GetContentRegionAvail().X / 2, 30)))
             {
-                SelectedListMateralsNew.Clear();
+                SelectedListMaterialsNew.Clear();
                 listMaterialsNew.Clear();
 
                 for (var i = 0; i < timesToAdd; i++)
@@ -331,7 +331,7 @@ internal class ListEditor : Window, IDisposable
             ImGui.SameLine();
             if (ImGui.Button("Add to List (with all sub-crafts)", new Vector2(ImGui.GetContentRegionAvail().X, 30)))
             {
-                SelectedListMateralsNew.Clear();
+                SelectedListMaterialsNew.Clear();
                 listMaterialsNew.Clear();
 
                 CraftingListUI.AddAllSubcrafts(SelectedRecipe, SelectedList, 1, timesToAdd);
