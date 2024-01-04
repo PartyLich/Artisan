@@ -43,7 +43,7 @@ internal static class CraftingListHelpers
                 var name = LuminaSheets.ItemSheet[(uint)ing.ItemIngredient].Name.RawString;
                 SelectedRecipesCraftable[(uint)ing.ItemIngredient] = FilteredList.Any(x => x.Value.ItemResult.Value.Name.RawString == name);
 
-                if (GetIngredientRecipe((uint)ing.ItemIngredient) != null && addSublist)
+                if (addSublist && HasIngredientRecipe((uint)ing.ItemIngredient))
                 {
                     AddRecipeIngredientsToList(GetIngredientRecipe((uint)ing.ItemIngredient), ref ingredientList);
                 }
@@ -61,6 +61,11 @@ internal static class CraftingListHelpers
             return result;
 
         return null;
+    }
+
+    public static bool HasIngredientRecipe(uint ingredient)
+    {
+        return LuminaSheets.RecipeSheet.Values.Any(x => x.ItemResult.Value.RowId == ingredient);
     }
 
     public static void TidyUpList(CraftingList list)
