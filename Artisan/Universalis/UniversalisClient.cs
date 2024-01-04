@@ -24,9 +24,20 @@ namespace Artisan.Universalis
             };
         }
 
-        public List<MarketboardData?> GetMarketBoard(string region, IEnumerable<ulong> itemId)
+        public List<MarketboardData?>? GetMarketBoard(string region, IEnumerable<ulong> itemId)
         {
-            var marketBoardFromAPI = this.GetMarketBoardData(region, itemId);
+            // Universalis API has a 100 item limit
+            const int ITEM_LIMIT = 100;
+            List<MarketboardData?>? marketBoardFromAPI = null;
+
+            foreach (var chunk in itemId.Chunk(ITEM_LIMIT))
+            {
+                var apiResult = this.GetMarketBoardData(region, chunk);
+                if (apiResult == null) return null;
+
+                (marketBoardFromAPI ??= []).AddRange(apiResult);
+            }
+
             return marketBoardFromAPI;
         }
 
