@@ -57,6 +57,15 @@ namespace Artisan.UI.Tables
         public readonly NumberForSaleColumn _numberForSaleColumn = new() { Label = "Quantity For Sale (All Worlds)" };
         public double TotalCost => _cheapestServerColumn.CheapestListings.Aggregate(0d, (acc, item) => acc + item.Value.Cost);
 
+        /// <summary>
+        /// Returns total market board cost excluding items that will be crafted.
+        /// </summary>
+        public double TotalCost2(CraftingList craftingList) =>
+            _cheapestServerColumn.CheapestListings
+                 .Where(item => !craftingList.Items.Distinct()
+                                                   .Any((recipeId) => item.Key == LuminaSheets.RecipeSheet[recipeId].ItemResult.Value.RowId))
+                 .Aggregate(0d, (acc, item) => acc + item.Value.Cost);
+
         private static bool GatherBuddy =>
             DalamudReflector.TryGetDalamudPlugin("GatherBuddy", out var _, false, true);
 

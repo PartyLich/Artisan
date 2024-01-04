@@ -227,9 +227,9 @@ internal class ListEditor : Window, IDisposable
                 ImGui.EndDisabled();
         }
 
-        if (Table != null)
+        if (Table != null && SelectedList != null)
         {
-            var costText = $"MB Total ({Table.TotalCost:N0})";
+            var costText = $"MB Total ({Table.TotalCost:N0}) | Need ({Table.TotalCost2(SelectedList):N0})";
             cursorX -= ImGuiHelpers.GetButtonSize(costText).X + 6f;
 
             ImGui.SameLine();
