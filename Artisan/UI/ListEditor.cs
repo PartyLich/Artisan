@@ -178,8 +178,10 @@ internal class ListEditor : Window, IDisposable
             ImGui.EndTabBar();
         }
 
+        var cursorX = ImGui.GetContentRegionMax().X;
         var btn = ImGuiHelpers.GetButtonSize("Begin Crafting List");
-        ImGui.SetCursorPosX(ImGui.GetContentRegionMax().X - btn.X);
+        cursorX -= btn.X;
+        ImGui.SetCursorPosX(cursorX);
         ImGui.SetCursorPosY(topRowY - 5f);
 
         if (Endurance.Enable || CraftingListUI.Processing)
@@ -197,7 +199,8 @@ internal class ListEditor : Window, IDisposable
 
         ImGui.SameLine();
         var export = ImGuiHelpers.GetButtonSize("Export List");
-        ImGui.SetCursorPosX(ImGui.GetContentRegionMax().X - export.X - btn.X - 3f);
+        cursorX -= export.X + 3f;
+        ImGui.SetCursorPosX(cursorX);
 
         if (ImGui.Button("Export List"))
         {
@@ -209,7 +212,8 @@ internal class ListEditor : Window, IDisposable
         {
             ImGui.SameLine();
             var restock = ImGuiHelpers.GetButtonSize("Restock From Retainers");
-            ImGui.SetCursorPosX(ImGui.GetContentRegionMax().X - restock.X - export.X - btn.X - 6f);
+            cursorX -= restock.X + 3f;
+            ImGui.SetCursorPosX(cursorX);
 
             if (Endurance.Enable || CraftingListUI.Processing)
                 ImGui.BeginDisabled();
@@ -223,7 +227,15 @@ internal class ListEditor : Window, IDisposable
                 ImGui.EndDisabled();
         }
 
+        if (Table != null && SelectedList != null)
+        {
+            var costText = $"MB Total ({Table.TotalCost:N0}) | Need ({Table.TotalCost2(SelectedList):N0})";
+            cursorX -= ImGuiHelpers.GetButtonSize(costText).X + 6f;
 
+            ImGui.SameLine();
+            ImGui.SetCursorPosX(cursorX);
+            ImGui.Text(costText);
+        }
     }
 
     public void DrawRecipeData()

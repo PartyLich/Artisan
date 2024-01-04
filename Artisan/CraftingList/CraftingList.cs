@@ -78,9 +78,9 @@ namespace Artisan.CraftingLists
         public static Dictionary<uint, int> ListMaterials(this CraftingList list)
         {
             var output = new Dictionary<uint, int>();
-            foreach (var item in list.Items.Distinct())
+            foreach (var recipeID in list.Items.Distinct())
             {
-                Recipe r = CraftingListHelpers.FilteredList[item];
+                Recipe r = CraftingListHelpers.FilteredList[recipeID];
                 CraftingListHelpers.AddRecipeIngredientsToList(r, ref output, false, list);
             }
 

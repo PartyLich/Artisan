@@ -20,53 +20,32 @@ internal static class CraftingListHelpers
 
     public static void AddRecipeIngredientsToList(Recipe? recipe, ref Dictionary<uint, int> ingredientList, bool addSublist = true, CraftingList selectedList = null)
     {
+        static bool hasQuantity(Recipe.RecipeUnkData5Obj x) => x.AmountIngredient > 0 && x.ItemIngredient != 0;
+
         try
         {
             if (recipe == null) return;
 
-            if (selectedList != null)
+            foreach (var ing in recipe.UnkData5.Where(hasQuantity))
             {
-                foreach (var ing in recipe.UnkData5.Where(x => x.AmountIngredient > 0 && x.ItemIngredient != 0))
+                var quantity = (selectedList != null)
+                        ? ing.AmountIngredient * selectedList.Items.Count(x => x == recipe.RowId)
+                        : ing.AmountIngredient;
+                if (ingredientList.ContainsKey((uint)ing.ItemIngredient))
                 {
-                    if (ingredientList.ContainsKey((uint)ing.ItemIngredient))
-                    {
-                        ingredientList[(uint)ing.ItemIngredient] += ing.AmountIngredient * selectedList.Items.Count(x => x == recipe.RowId);
-                    }
-                    else
-                    {
-                        ingredientList.TryAdd((uint)ing.ItemIngredient, ing.AmountIngredient * selectedList.Items.Count(x => x == recipe.RowId));
-                    }
-
-                    var name = LuminaSheets.ItemSheet[(uint)ing.ItemIngredient].Name.RawString;
-                    SelectedRecipesCraftable[(uint)ing.ItemIngredient] = FilteredList.Any(x => x.Value.ItemResult.Value.Name.RawString == name);
-
-                    if (GetIngredientRecipe((uint)ing.ItemIngredient) != null && addSublist)
-                    {
-                        AddRecipeIngredientsToList(GetIngredientRecipe((uint)ing.ItemIngredient), ref ingredientList);
-                    }
-
+                    ingredientList[(uint)ing.ItemIngredient] += quantity;
                 }
-            }
-            else
-            {
-                foreach (var ing in recipe.UnkData5.Where(x => x.AmountIngredient > 0 && x.ItemIngredient != 0))
+                else
                 {
-                    if (ingredientList.ContainsKey((uint)ing.ItemIngredient))
-                    {
-                        ingredientList[(uint)ing.ItemIngredient] += ing.AmountIngredient;
-                    }
-                    else
-                    {
-                        ingredientList.TryAdd((uint)ing.ItemIngredient, ing.AmountIngredient);
-                    }
+                    ingredientList.TryAdd((uint)ing.ItemIngredient, quantity);
+                }
 
-                    var name = LuminaSheets.ItemSheet[(uint)ing.ItemIngredient].Name.RawString;
-                    SelectedRecipesCraftable[(uint)ing.ItemIngredient] = FilteredList.Any(x => x.Value.ItemResult.Value.Name.RawString == name);
+                var name = LuminaSheets.ItemSheet[(uint)ing.ItemIngredient].Name.RawString;
+                SelectedRecipesCraftable[(uint)ing.ItemIngredient] = FilteredList.Any(x => x.Value.ItemResult.Value.Name.RawString == name);
 
-                    if (GetIngredientRecipe((uint)ing.ItemIngredient) != null && addSublist)
-                    {
-                        AddRecipeIngredientsToList(GetIngredientRecipe((uint)ing.ItemIngredient), ref ingredientList);
-                    }
+                if (GetIngredientRecipe((uint)ing.ItemIngredient) != null && addSublist)
+                {
+                    AddRecipeIngredientsToList(GetIngredientRecipe((uint)ing.ItemIngredient), ref ingredientList);
                 }
             }
         }

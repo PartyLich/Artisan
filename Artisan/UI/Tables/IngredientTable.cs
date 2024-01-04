@@ -55,6 +55,16 @@ namespace Artisan.UI.Tables
         public readonly GatherItemLocationColumn _gatherItemLocationColumn = new() { Label = "Gathered Zone" };
         public readonly CheapestServerColumn _cheapestServerColumn = new() { Label = "Optimal World For Buying" };
         public readonly NumberForSaleColumn _numberForSaleColumn = new() { Label = "Quantity For Sale (All Worlds)" };
+        public double TotalCost => _cheapestServerColumn.CheapestListings.Aggregate(0d, (acc, item) => acc + item.Value.Cost);
+
+        /// <summary>
+        /// Returns total market board cost excluding items that will be crafted.
+        /// </summary>
+        public double TotalCost2(CraftingList craftingList) =>
+            _cheapestServerColumn.CheapestListings
+                 .Where(item => !craftingList.Items.Distinct()
+                                                   .Any((recipeId) => item.Key == LuminaSheets.RecipeSheet[recipeId].ItemResult.Value.RowId))
+                 .Aggregate(0d, (acc, item) => acc + item.Value.Cost);
 
         private static bool GatherBuddy =>
             DalamudReflector.TryGetDalamudPlugin("GatherBuddy", out var _, false, true);
@@ -119,6 +129,11 @@ namespace Artisan.UI.Tables
             foreach (var item in Items)
             {
                 item.OnRemainingChange += SetFilterDirty;
+
+                if (P.Config.UseUniversalis)
+                {
+                    FindCheapest(ref _cheapestServerColumn.CheapestListings, item);
+                }
             }
         }
 
@@ -157,7 +172,7 @@ namespace Artisan.UI.Tables
                 if (ShowColour)
                 {
                     int invAmount = ShowHQOnly && item.CanBeCrafted ? item.InventoryHQ : item.Inventory;
-                    int retainerAmount = ShowHQOnly && item.CanBeCrafted ? item.ReainterCountHQ : item.RetainerCount;
+                    int retainerAmount = ShowHQOnly && item.CanBeCrafted ? item.RetainerCountHQ : item.RetainerCount;
 
                     if (item.CanBeCrafted && retainerAmount + invAmount + item.TotalCraftable >= item.Required)
                     {
@@ -286,7 +301,7 @@ namespace Artisan.UI.Tables
                 if (!HQOnlyCrafts || !item.CanBeCrafted)
                     return item.RetainerCount.ToString();
 
-                int retainerHQ = item.ReainterCountHQ;
+                int retainerHQ = item.RetainerCountHQ;
                 return retainerHQ.ToString();
             }
         }
@@ -347,59 +362,21 @@ namespace Artisan.UI.Tables
 
             public override string ToName(Ingredient item)
             {
-                if (item.MarketboardData != null && !CheapestListings.ContainsKey(item.Data.RowId))
+                if (!CheapestListings.TryGetValue(item.Data.RowId, out (string World, double Qty, double Cost) value))
                 {
-                    double totalCost = 0;
-                    double qty = 0;
-
-
-                    double currentWorldCost = 0;
-                    string currentWorld = "";
-                    double currentWorldQty = 0;
-
-                    foreach (var world in item.MarketboardData.AllListings.Select(x => x.World))
-                    {
-                        totalCost = 0;
-                        qty = 0;
-
-                        foreach (var listing in item.MarketboardData.AllListings.Where(x => x.World == world).OrderBy(x => x.TotalPrice))
-                        {
-                            if (qty >= item.Required) break;
-                            qty += listing.Quantity;
-                            totalCost += listing.TotalPrice;
-                        }
-
-                        if ((totalCost < currentWorldCost && qty >= item.Required) || currentWorldCost == 0 || (qty > currentWorldQty && qty < item.Required))
-                        {
-                            currentWorldCost = totalCost;
-                            currentWorld = world;
-                            currentWorldQty = qty;
-                        }
-                    }
-
-                    CheapestListings.TryAdd(item.Data.RowId, new(currentWorld, currentWorldQty, currentWorldCost));
-
-                    item.MarketboardData.LowestWorld = currentWorld;
+                    return "ERROR - No Listings (Possible Universalis Connection Issue)";
                 }
 
-                if (CheapestListings.ContainsKey(item.Data.RowId))
-                {
-                    var listing = CheapestListings[item.Data.RowId];
-
-                    return $"{listing.World} - Cost {listing.Cost.ToString("N0")}, Qty {listing.Qty}";
-
-                }
-
-                return "ERROR - No Listings (Possible Universalis Connection Issue)";
+                return $"{value.World} - Cost {value.Cost.ToString("N0")}, Qty {value.Qty}";
             }
 
             public override void DrawColumn(Ingredient item, int _)
             {
                 ImGui.Text($"{ToName(item)}");
 
-                if (Lifestream && CheapestListings.ContainsKey(item.Data.RowId))
+                if (Lifestream && CheapestListings.TryGetValue(item.Data.RowId, out (string World, double Qty, double Cost) listing))
                 {
-                    var server = CheapestListings[item.Data.RowId].World;
+                    var server = listing.World;
                     if (ImGui.IsItemHovered())
                     {
                         ImGui.BeginTooltip();
@@ -669,6 +646,42 @@ namespace Artisan.UI.Tables
             DrawFilterOnCrafts(item);
             DrawRestockFromRetainer(item);
             //DrawCraftThisItem(item);
+        }
+
+        private static void FindCheapest(ref Dictionary<uint, (string World, double Qty, double Cost)> CheapestListings, Ingredient item)
+        {
+            if (item.MarketboardData != null && !CheapestListings.ContainsKey(item.Data.RowId))
+            {
+                double totalCost = 0;
+                double qty = 0;
+
+                double currentWorldCost = 0;
+                string currentWorld = "";
+                double currentWorldQty = 0;
+
+                foreach (var world in item.MarketboardData.AllListings.Select(x => x.World))
+                {
+                    totalCost = 0;
+                    qty = 0;
+
+                    foreach (var listing in item.MarketboardData.AllListings.Where(x => x.World == world).OrderBy(x => x.TotalPrice))
+                    {
+                        if (qty >= item.Remaining) break;
+                        qty += listing.Quantity;
+                        totalCost += listing.TotalPrice;
+                    }
+
+                    if (currentWorldCost == 0 || (totalCost < currentWorldCost && qty >= item.Remaining) || (qty > currentWorldQty && qty < item.Remaining))
+                    {
+                        currentWorldCost = totalCost;
+                        currentWorld = world;
+                        currentWorldQty = qty;
+                    }
+                }
+
+                CheapestListings.TryAdd(item.Data.RowId, new(currentWorld, currentWorldQty, currentWorldCost));
+                item.MarketboardData.LowestWorld = currentWorld;
+            }
         }
 
         private void DrawMarketBoardLookup(Ingredient item)
