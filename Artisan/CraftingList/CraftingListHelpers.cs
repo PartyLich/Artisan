@@ -84,7 +84,6 @@ internal static class CraftingListHelpers
                     if (crafting > requiredItem.Value)
                     {
                         double diff = crafting - requiredItem.Value;
-
                         var numberOfCrafts = Math.Floor(diff / recipe.AmountResult);
 
                         for (int i = 0; i < numberOfCrafts; i++)
@@ -92,11 +91,8 @@ internal static class CraftingListHelpers
                             var index = list.Items.IndexOf(recipe.RowId);
                             list.Items.RemoveAt(index);
                         }
-
-
                     }
                 }
-
             }
         }
 
@@ -114,13 +110,11 @@ internal static class CraftingListHelpers
                 var recipe = GetIngredientRecipe(requiredItem.Key);
                 if (list.Items.Any(x => x == recipe.RowId))
                 {
-
                     var crafting = list.Items.Count(x => x == recipe.RowId) * recipe.AmountResult;
 
                     if (crafting > requiredItem.Value)
                     {
                         double diff = crafting - requiredItem.Value;
-
                         var numberOfCrafts = Math.Floor(diff / recipe.AmountResult);
 
                         for (int i = 0; i < numberOfCrafts; i++)
@@ -128,12 +122,9 @@ internal static class CraftingListHelpers
                             var index = list.Items.IndexOf(recipe.RowId);
                             list.Items.RemoveAt(index);
                         }
-
                     }
                 }
-
             }
         }
-
     }
 }

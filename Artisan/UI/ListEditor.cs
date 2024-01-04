@@ -608,6 +608,7 @@ internal class ListEditor : Window, IDisposable
             ImGui.Text($"Ingredient table is still populating. Please wait.");
             return;
         }
+
         ImGui.BeginChild("###IngredientsListTable", new Vector2(ImGui.GetContentRegionAvail().X, ImGui.GetContentRegionAvail().Y - 60f));
         Table._nameColumn.ShowColour = ColourValidation;
         Table._inventoryColumn.HQOnlyCrafts = HQSubcraftsOnly;
