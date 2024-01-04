@@ -90,6 +90,8 @@ namespace Artisan.Universalis
 
         private static MarketboardData? ParseMarketData(dynamic json)
         {
+            if (json == null) return null;
+
             var marketBoardData = new MarketboardData
             {
                 LastCheckTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
