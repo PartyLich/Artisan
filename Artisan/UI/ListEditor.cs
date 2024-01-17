@@ -1236,11 +1236,15 @@ internal class ListFolders : ItemSelector<CraftingList>
     protected override bool OnDuplicate(string name, int idx)
     {
         var baseList = P.Config.CraftingLists[idx];
-        CraftingList newList = new CraftingList();
-        newList.Name = name;
+        CraftingList newList = new()
+        {
+            Name = name,
+            Items = baseList.Items.ToList(),
+            ListItemOptions = baseList.ListItemOptions.JSONClone(),
+        };
         newList.SetID();
-        newList.Items = baseList.Items.ToList();
         newList.Save();
+
         return true;
     }
 
